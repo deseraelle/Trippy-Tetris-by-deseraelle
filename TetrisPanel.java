@@ -1,9 +1,9 @@
 /***************************************************************************************/
 // CLASS: 		  TetrisPanel
-// AUTHOR: 		  David Hjelmstad (dhjelmst@asu.edu)
+// AUTHOR: 		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The TetrisPanel class sets up the GUI for the game and handles all
 //					  of the game logic. 
-// LAST UPDATED: 31 May 2013
+// LAST UPDATED: 1 Sep 2020
 /***************************************************************************************/
 import java.awt.*;
 import java.awt.event.*;
@@ -12,8 +12,10 @@ import java.util.Random;
 import javax.swing.Timer;
 import java.util.*;
 import java.lang.Math.*;
-import sun.audio.*;
+import javax.sound.sampled.*;
 import java.io.*;
+import java.lang.*;
+
 
 public class TetrisPanel extends JPanel
  {
@@ -42,8 +44,8 @@ public class TetrisPanel extends JPanel
  	//Music
  	private Timer musictimer;
  	private MusicListener musicTimerListener;
- 	private InputStream in = null;
- 	private AudioStream as = null;
+ 	private AudioInputStream ais = null;
+ 	private Clip clip = null;
  	private int SONG_LENGTH = (5*60+36)*1000;
  	
 
@@ -144,7 +146,7 @@ public class TetrisPanel extends JPanel
  	 	
  	 	// Start Button
  	 	setLayout(null);
- 	 	start = new JButton("START");
+ 	 	start = new JButton("PUSH 2 START");
  	 	starter = new startListener();
  	 	start.addActionListener(starter);
  	 	start.setSize(new Dimension(4*GRID_SIZE, 2*GRID_SIZE));
@@ -189,7 +191,7 @@ public class TetrisPanel extends JPanel
 			 }
 			else
 			 {
-			 	AudioPlayer.player.stop(as);
+			 	clip.stop();
 			 	timer.stop();
 			 	repaint();
 			 }
@@ -456,9 +458,19 @@ public class TetrisPanel extends JPanel
 					 }		
          		break;
          	case KeyEvent.VK_N:
-         		AudioPlayer.player.stop(as);
+         		clip.stop();
          		remove(gameoverLabel);
-         		reset();
+         		JFrame frame = new JFrame ("Tetris");
+ 	 			frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+ 	 	
+ 	 			// Creates new instance of TetrisPanel()
+ 	 			frame.getContentPane().add(new TetrisPanel());
+ 	 	
+ 	 			frame.pack();
+ 	 			frame.setVisible(true);
+         		JComponent comp = (JComponent) e.getSource();
+  				Window win = SwingUtilities.getWindowAncestor(comp);
+  				win.dispose();
          		break;					
           }	
         }
@@ -558,20 +570,17 @@ private class MusicListener implements ActionListener
  	 	public void actionPerformed(ActionEvent e)
  	 	 {
 			try {
-				 in = getClass().getResourceAsStream("/resources/oldirty.wav");
+				 ais = AudioSystem.getAudioInputStream(TetrisPanel.class.getResourceAsStream("/resources/oldirty.wav"));
+				 clip = AudioSystem.getClip();
+				clip.open(ais);
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
 			 } catch (Exception ex) {};
-		
-			try {  
-				as = new AudioStream(in);
-			 } catch (IOException ex) {}; 
 			
-			AudioPlayer.player.start(as);
 		}
  	 }
  	  	 
  	// Gives focus to keyboard
- 	public boolean isFocusable()
-      {
+ 	public boolean isFocusable() {
         return true;
       }  
  }

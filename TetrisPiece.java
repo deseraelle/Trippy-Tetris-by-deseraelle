@@ -1,6 +1,6 @@
 /***************************************************************************************/
 // CLASS: 		  TetrisPanel
-// AUTHOR:		  David Hjelmstad (dhjelmst@asu.edu)
+// AUTHOR:		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The TetrisPiece class defines the possible tetris shapes by representing 
 // 				  them as a 5x5 array. The methods necessary for rotation and movement 
 // 				  around the board are also defined. Each piece is identified by an 
