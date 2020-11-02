@@ -1,9 +1,9 @@
 /***************************************************************************************/
 // CLASS: 		  Tetris
-// AUTHOR:		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
+// AUTHOR:		  dævyd hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The Tetris class contains the main() method for the game, which 
 //					  creates a frame and adds an instance of TetrisPanel to it. 
-// LAST UPDATED: 3 Nov 2012
+// LAST UPDATED: 1 Nov 2020
 //
 //Note: To create .jar: jar cfm Tetris.jar Manifest.txt *
 
@@ -23,5 +23,6 @@ public class Tetris
  	 	
  	 	frame.pack();
  	 	frame.setVisible(true);
+
  	 }
  }

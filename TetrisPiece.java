@@ -1,18 +1,18 @@
 /***************************************************************************************/
-// CLASS: 		  TetrisPanel
-// AUTHOR:		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
+// CLASS: 		 TetrisPanel
+// AUTHOR:		 dævyd hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The TetrisPiece class defines the possible tetris shapes by representing 
-// 				  them as a 5x5 array. The methods necessary for rotation and movement 
-// 				  around the board are also defined. Each piece is identified by an 
-//					  integer between 0 and 6:
+// 				 them as a 5x5 array. The methods necessary for rotation and movement 
+// 				 around the board are also defined. Each piece is identified by an 
+//				 integer between 0 and 6:
 //							 0 - Square
 //							 1 - Line
 //							 2 - forwards 'L'
-// 						 3 - backwards 'L'
+// 						  	 3 - backwards 'L'
 //							 4 - backwards 'Z'
 //							 5 - forwards 'Z'
 //							 6 - 'T' 
-// LAST UPDATED: 29 Nov 2012
+// LAST UPDATED: 1 Nov 2020
 /***************************************************************************************/
 
 import java.awt.*;
