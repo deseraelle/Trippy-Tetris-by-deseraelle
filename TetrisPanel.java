@@ -72,6 +72,7 @@ public class TetrisPanel extends JPanel
  	private AudioInputStream ais = null;
  	private Clip clip = null;
  	private int SONG_LENGTH = (5*60+36)*1000;
+ 	private boolean mute = false;
  	
 
  	// TetrisBoard contains data for the current piece, while TETRIS_BOARD holds the
@@ -591,6 +592,13 @@ public class TetrisPanel extends JPanel
 						repaint();
 					 }		
          		break;
+
+         	case KeyEvent.VK_M:
+         		mute = !mute;
+         		if (mute) clip.stop();
+         		else clip.start();
+         		break;
+         			
          	case KeyEvent.VK_N:
          		if(GAMEON == true){
 	         		GAMEON = false;
