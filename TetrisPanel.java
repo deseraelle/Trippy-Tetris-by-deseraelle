@@ -8,6 +8,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.table.*;
 import java.util.Random;
 import javax.swing.Timer;
 import java.util.*;
@@ -15,6 +16,12 @@ import java.lang.Math.*;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.lang.*;
+
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TetrisPanel extends JPanel
@@ -30,14 +37,27 @@ public class TetrisPanel extends JPanel
  	
  	private static final int SCORE_FONT = 20;
  	private static final int INSTRUCTION_FONT = 15;
+ 	private static final int HIGH_SCORE_LENGTH = 100;
  	
  	private boolean gameOver;
  	private boolean GAMEON;
  	private boolean paused;
  	private int score, numLines, delay;
- 	
+
+ 	//high scores
+ 	private Object[][] scoreData;
+ 	private Object[] columnNames = {"name", "score"};
+ 	private String score_record_path = "score_record.csv";
+ 	private JTable scoreRecord;
+ 	private JScrollPane scrollPane;
+ 	private String CSV_DELIMITER = ",";
+ 	private File file = new File(score_record_path);
+ 	private int score_count;
+ 	private DefaultTableModel dt_model;
+
  	//Background image
- 	private String BACKGROUND_PATH = "/resources/Mountains.JPG";
+ 	private String BACKGROUND_PATH = "/Mountains.JPG";
+ 	private String MUSIC_PATH = "/oldirty.wav";
  	private ImageIcon BACKGROUNDicon = new ImageIcon(getClass().getResource(BACKGROUND_PATH));
  	private Image BACKGROUND = BACKGROUNDicon.getImage();
  	
@@ -47,6 +67,7 @@ public class TetrisPanel extends JPanel
  	private AudioInputStream ais = null;
  	private Clip clip = null;
  	private int SONG_LENGTH = (5*60+36)*1000;
+ 	private boolean mute = false;
  	
 
  	// TetrisBoard contains data for the current piece, while TETRIS_BOARD holds the
@@ -64,7 +85,7 @@ public class TetrisPanel extends JPanel
  	private Timer timer;
  	private TimerListener timerlistener;
  	
- 	private JLabel scoreLabel, linesLabel, pausedLabel, instructionLabel, gameoverLabel, titleLabel;
+ 	private JLabel scoreLabel, scoreRecordLabel, linesLabel, pausedLabel, instructionLabel, gameoverLabel, titleLabel;
  	private Random rnd;
  	
  	private JButton start;
@@ -75,24 +96,31 @@ public class TetrisPanel extends JPanel
  	/**METHODS**/
  	public TetrisPanel()
  	 {
+ 	 	
+ 	 	setFocusable(true);
+	    setRequestFocusEnabled(true);
  	 	// Set dimensions of the window and initialize instance variables
   	 	setPreferredSize(new Dimension (WINDOW_WIDTH,WINDOW_HEIGHT));
 
  	 	scoreLabel = new JLabel("Score: 0");
+ 	 	scoreRecordLabel = new JLabel("High Scores");
  	 	linesLabel = new JLabel("Number of Lines: 0"); 
  	 	pausedLabel = new JLabel("");
  	 	gameoverLabel = new JLabel("GAME OVER");
  	 	instructionLabel = new JLabel("<HTML>Use arrow keys to move side to side. 'Z' and 'X' rotate pieces, and Space Bar is hard drop. Press 'P' to pause, 'N' for a new game. <BR>1 Line- 100 pts<BR>2 Lines- 200pts<BR>3 Lines- 400 pts<BR>4 Lines-800 pts</HTML>");
- 	 	titleLabel = new JLabel("<HTML>TRIPPY TETRIS<BR>by dhjelmstad</HTML>");
+ 	 	titleLabel = new JLabel("<HTML>TRIPPY TETRIS<BR>by dævyd</HTML>");
  	 	titleLabel.setFont(new Font("Sans-Serif", Font.ITALIC, 33));
  	 	titleLabel.setForeground(Color.WHITE);
  	 	titleLabel.setBounds((LEFT_BUFFER+WIDTH/2)*GRID_SIZE-4*GRID_SIZE+10, GRID_SIZE, 8*GRID_SIZE, 5*GRID_SIZE);
  	 	
  	 	// Create timer, add timerListener
- 	 	timerlistener = new TimerListener();
- 	 	timer = new Timer(getDelay(), timerlistener);
+ 	  	// Music Timer
+		musicTimerListener = new MusicListener();
+ 	 	musictimer = new Timer(SONG_LENGTH, musicTimerListener);
+ 	 	musictimer.setInitialDelay(0);
  	 	
  	 	// Add ControllerListener and give the program the keyboard focus
+ 	 	loadScores();
  	 	addKeyListener(new ControllerListener());
  	 	requestFocus();
  	 	
@@ -137,6 +165,10 @@ public class TetrisPanel extends JPanel
  	 	nextpiece = new TetrisPiece(rnd.nextInt(7),0,5);
  	 	
  	 	repaint();
+ 	 	 
+	 	// Create timer, add timerListener
+ 	 	timerlistener = new TimerListener();
+ 	 	timer = new Timer(getDelay(), timerlistener);
  	 	 
  	 	// Music timer
  	 	musicTimerListener = new MusicListener();
@@ -191,9 +223,17 @@ public class TetrisPanel extends JPanel
 			 }
 			else
 			 {
-			 	clip.stop();
-			 	timer.stop();
-			 	repaint();
+			 	if (clip != null) {
+			 		clip.stop();
+			 	}
+				 if(score != 0) {	
+				 	String player_name = (String) JOptionPane.showInputDialog("enter your name, champion !! : ");
+	 	 	 		dt_model = (DefaultTableModel) scoreRecord.getModel();
+					dt_model.addRow(new Object[] {player_name, score});
+					score_count++;
+					exportToCSV(scoreRecord, score_record_path);
+				 	repaint();
+				 }
 			 }
 			 // try {
 			 // 	Thread.sleep(100);
@@ -547,6 +587,14 @@ public class TetrisPanel extends JPanel
 						repaint();
 					 }		
          		break;
+
+         	//mute button
+         	case KeyEvent.VK_M:
+         		mute = !mute;
+         		if(mute) clip.stop();
+         		else clip.start();	
+         		break;
+
          	case KeyEvent.VK_N:
          		clip.stop();
          		remove(gameoverLabel);
