@@ -1,9 +1,9 @@
 /***************************************************************************************/
 // CLASS: 		  TetrisPanel
-// AUTHOR: 		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
+// AUTHOR: 		  dævyd hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The TetrisPanel class sets up the GUI for the game and handles all
 //					  of the game logic. 
-// LAST UPDATED: 1 Sep 2020
+// LAST UPDATED: 6 Nov 2020
 /***************************************************************************************/
 import java.awt.*;
 import java.awt.event.*;
@@ -338,7 +338,6 @@ public class TetrisPanel extends JPanel
  	 	 	repaint();  
  	 }
  	
-<<<<<<< HEAD
 
  	 private void loadScores()
  	 {
@@ -430,8 +429,7 @@ public class TetrisPanel extends JPanel
 	}    
 
 
-=======
->>>>>>> parent of 58a758f... Added 'high scores' feature which tracks & displays local high scores.
+
  	// ControllerListener handles all of the controls for the game
  	private class ControllerListener implements KeyListener
 	 {
