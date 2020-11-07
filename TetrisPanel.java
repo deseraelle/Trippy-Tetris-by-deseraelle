@@ -3,8 +3,9 @@
 // AUTHOR: 		  dævyd hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The TetrisPanel class sets up the GUI for the game and handles all
 //					  of the game logic. 
-// LAST UPDATED: 6 Nov 2020
+// LAST UPDATED: 1 Nov 2020
 /***************************************************************************************/
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -37,12 +38,14 @@ public class TetrisPanel extends JPanel
  	
  	private static final int SCORE_FONT = 20;
  	private static final int INSTRUCTION_FONT = 15;
- 	private static final int HIGH_SCORE_LENGTH = 100;
  	
+ 	private static final int HIGH_SCORE_LENGTH = 100;
+
  	private boolean gameOver;
  	private boolean GAMEON;
  	private boolean paused;
  	private int score, numLines, delay;
+ 	
 
  	//high scores
  	private Object[][] scoreData;
@@ -55,6 +58,8 @@ public class TetrisPanel extends JPanel
  	private int score_count;
  	private DefaultTableModel dt_model;
 
+
+
  	//Background image
  	private String BACKGROUND_PATH = "/Mountains.JPG";
  	private String MUSIC_PATH = "/oldirty.wav";
@@ -63,11 +68,10 @@ public class TetrisPanel extends JPanel
  	
  	//Music
  	private Timer musictimer;
- 	private MusicListener musicTimerListener;
+	private MusicListener musicTimerListener;
  	private AudioInputStream ais = null;
  	private Clip clip = null;
  	private int SONG_LENGTH = (5*60+36)*1000;
- 	private boolean mute = false;
  	
 
  	// TetrisBoard contains data for the current piece, while TETRIS_BOARD holds the
@@ -96,8 +100,8 @@ public class TetrisPanel extends JPanel
  	/**METHODS**/
  	public TetrisPanel()
  	 {
- 	 	
- 	 	setFocusable(true);
+ 	 	/**FOCUS VARIABLES**/
+	 	setFocusable(true);
 	    setRequestFocusEnabled(true);
  	 	// Set dimensions of the window and initialize instance variables
   	 	setPreferredSize(new Dimension (WINDOW_WIDTH,WINDOW_HEIGHT));
@@ -113,14 +117,19 @@ public class TetrisPanel extends JPanel
  	 	titleLabel.setForeground(Color.WHITE);
  	 	titleLabel.setBounds((LEFT_BUFFER+WIDTH/2)*GRID_SIZE-4*GRID_SIZE+10, GRID_SIZE, 8*GRID_SIZE, 5*GRID_SIZE);
  	 	
+ 	 	loadScores();
+ 	 
+
  	 	// Create timer, add timerListener
- 	  	// Music Timer
+ 	 	timerlistener = new TimerListener();
+ 	 	timer = new Timer(getDelay(), timerlistener);
+
+ 	 	// Music Timer
 		musicTimerListener = new MusicListener();
  	 	musictimer = new Timer(SONG_LENGTH, musicTimerListener);
  	 	musictimer.setInitialDelay(0);
  	 	
  	 	// Add ControllerListener and give the program the keyboard focus
- 	 	loadScores();
  	 	addKeyListener(new ControllerListener());
  	 	requestFocus();
  	 	
@@ -165,17 +174,7 @@ public class TetrisPanel extends JPanel
  	 	nextpiece = new TetrisPiece(rnd.nextInt(7),0,5);
  	 	
  	 	repaint();
- 	 	 
-	 	// Create timer, add timerListener
- 	 	timerlistener = new TimerListener();
- 	 	timer = new Timer(getDelay(), timerlistener);
- 	 	 
- 	 	// Music timer
- 	 	musicTimerListener = new MusicListener();
- 	 	musictimer = new Timer(SONG_LENGTH, musicTimerListener);
- 	 	musictimer.setInitialDelay(0);
- 	 	
- 	 	
+
  	 	// Start Button
  	 	setLayout(null);
  	 	start = new JButton("PUSH 2 START");
@@ -186,6 +185,7 @@ public class TetrisPanel extends JPanel
  	 	
  	 	timer.stop();
  	 	add(start);
+ 	 	requestFocus();
  	 }
  	 
  	 private class startListener implements ActionListener
@@ -193,8 +193,8 @@ public class TetrisPanel extends JPanel
  	 	public void actionPerformed(ActionEvent e)
  	 	 {
  	 	 	remove(titleLabel);
- 	 	 	musictimer.start();
  	 	 	GAMEON = true;
+ 	 	 	musictimer.start();
  	 		timer.start();
  	 		remove(start);
  	 	 }
@@ -223,6 +223,7 @@ public class TetrisPanel extends JPanel
 			 }
 			else
 			 {
+			 	timer.stop();
 			 	if (clip != null) {
 			 		clip.stop();
 			 	}
@@ -466,7 +467,6 @@ public class TetrisPanel extends JPanel
 	}    
 
 
-
  	// ControllerListener handles all of the controls for the game
  	private class ControllerListener implements KeyListener
 	 {
@@ -580,36 +580,39 @@ public class TetrisPanel extends JPanel
          		if (!gameOver && GAMEON)
          		 {
 						paused = !paused;
-						if (paused)
+						if (paused) {
 							timer.stop();
-						else
+							clip.stop();
+						}
+						else {
 							timer.start();
+							clip.start();
+						}
 						repaint();
 					 }		
          		break;
-
-         	//mute button
-         	case KeyEvent.VK_M:
-         		mute = !mute;
-         		if(mute) clip.stop();
-         		else clip.start();	
-         		break;
-
          	case KeyEvent.VK_N:
-         		clip.stop();
-         		remove(gameoverLabel);
-         		JFrame frame = new JFrame ("Tetris");
- 	 			frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
- 	 	
- 	 			// Creates new instance of TetrisPanel()
- 	 			frame.getContentPane().add(new TetrisPanel());
- 	 	
- 	 			frame.pack();
- 	 			frame.setVisible(true);
-         		JComponent comp = (JComponent) e.getSource();
-  				Window win = SwingUtilities.getWindowAncestor(comp);
-  				win.dispose();
-         		break;					
+         		if(GAMEON == true){
+	         		GAMEON = false;
+	         		clip.stop();
+	         		clip = null;
+	         		ais = null;
+	         		musictimer = null;
+	         		musicTimerListener = null;
+	         		remove(gameoverLabel);
+	         		JFrame frame = new JFrame ("Tetris");
+	 	 			frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+	 	 	
+	 	 			// Creates new instance of TetrisPanel()
+	 	 			frame.getContentPane().add(new TetrisPanel());
+	 	 	
+	 	 			frame.pack();
+	 	 			frame.setVisible(true);
+	         		JComponent comp = (JComponent) e.getSource();
+	  				Window win = SwingUtilities.getWindowAncestor(comp);
+	  				win.dispose();
+	         	}
+	         	break;					
           }	
         }
     }
@@ -661,6 +664,8 @@ public class TetrisPanel extends JPanel
  	 		pausedLabel.setText("");
  	 	scoreLabel.setBounds((LEFT_BUFFER+WIDTH+1)*GRID_SIZE, 7*GRID_SIZE, 10*GRID_SIZE, 2*GRID_SIZE);
  	 	scoreLabel.setFont(new Font("Serif", Font.BOLD, SCORE_FONT));
+ 	 	scoreRecordLabel.setBounds((LEFT_BUFFER+WIDTH)*GRID_SIZE+10, (HEIGHT-14)*GRID_SIZE, 10*GRID_SIZE, 2*GRID_SIZE);
+ 	 	scoreRecordLabel.setFont(new Font("Serif", Font.ITALIC, INSTRUCTION_FONT));
  	 	linesLabel.setBounds((LEFT_BUFFER+WIDTH+1)*GRID_SIZE, 8*GRID_SIZE, 10*GRID_SIZE, 2*GRID_SIZE);
  	 	linesLabel.setFont(new Font("Serif", Font.PLAIN, SCORE_FONT));
  	 	pausedLabel.setBounds((LEFT_BUFFER+WIDTH/2)*GRID_SIZE-pausedLabel.getWidth()/2, 3*GRID_SIZE, 5*GRID_SIZE, 2*GRID_SIZE);
@@ -668,10 +673,14 @@ public class TetrisPanel extends JPanel
  	 	pausedLabel.setForeground(Color.WHITE);
  	 	instructionLabel.setBounds((LEFT_BUFFER+WIDTH)*GRID_SIZE+10, (HEIGHT-6)*GRID_SIZE, 9*GRID_SIZE, 7*GRID_SIZE);
  	 	instructionLabel.setFont(new Font("Serif",Font.ITALIC, INSTRUCTION_FONT));
+ 	 	scrollPane.setBounds((LEFT_BUFFER+WIDTH)*GRID_SIZE+10, (HEIGHT-12)*GRID_SIZE, 9*GRID_SIZE, 3*GRID_SIZE); 
  	 	add(scoreLabel);
+ 	 	add(scoreRecordLabel);
  	 	add(linesLabel);
  	 	add(instructionLabel);
  	 	add(pausedLabel);
+ 	 	add(scrollPane);
+
  	 	if (gameOver)
  	 	 {	
  	 	 	gameoverLabel.setBounds((LEFT_BUFFER+WIDTH/2)*GRID_SIZE-gameoverLabel.getWidth()/2+5, (HEIGHT/4)*GRID_SIZE, 10*GRID_SIZE, 10*GRID_SIZE);
@@ -703,17 +712,18 @@ public class TetrisPanel extends JPanel
  	 	 }
  	 }
 
-private class MusicListener implements ActionListener
+	private class MusicListener implements ActionListener
  	 {
  	 	public void actionPerformed(ActionEvent e)
  	 	 {
-			try {
-				 ais = AudioSystem.getAudioInputStream(TetrisPanel.class.getResourceAsStream("/resources/oldirty.wav"));
-				 clip = AudioSystem.getClip();
-				clip.open(ais);
-				clip.loop(Clip.LOOP_CONTINUOUSLY);
-			 } catch (Exception ex) {};
-			
+			if ((clip == null) & (GAMEON == true)) {	
+				try {
+					ais = AudioSystem.getAudioInputStream(TetrisPanel.class.getResourceAsStream(MUSIC_PATH));
+					clip = AudioSystem.getClip();
+					clip.open(ais);
+					clip.loop(Clip.LOOP_CONTINUOUSLY);
+				 } catch (Exception ex) {} ;
+			}
 		}
  	 }
  	  	 
@@ -721,4 +731,5 @@ private class MusicListener implements ActionListener
  	public boolean isFocusable() {
         return true;
       }  
- }
+
+}
