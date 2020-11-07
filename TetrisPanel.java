@@ -47,7 +47,6 @@ public class TetrisPanel extends JPanel
  	private AudioInputStream ais = null;
  	private Clip clip = null;
  	private int SONG_LENGTH = (5*60+36)*1000;
- 	private boolean mute = false;
  	
 
  	// TetrisBoard contains data for the current piece, while TETRIS_BOARD holds the
@@ -406,16 +405,14 @@ public class TetrisPanel extends JPanel
 
 
 	        for (int i = 0; i < dt_model.getColumnCount(); i++) {
-	            csv.write(dt_model.getColumnName(i));
-	            if (i == 0) csv.write(",");
+	            csv.write(dt_model.getColumnName(i) + ",");
 	        }
 
 	        csv.write("\n");
 
 	        for (int i = 0; i < score_count; i++) {
 	            for (int j = 0; j < dt_model.getColumnCount(); j++) {
-	                csv.write(dt_model.getValueAt(i, j).toString());
-	                if (j == 0) csv.write(",");
+	                csv.write(dt_model.getValueAt(i, j).toString() + ",");
 	            }
 	            csv.write("\n");
 	        }
@@ -550,16 +547,6 @@ public class TetrisPanel extends JPanel
 						repaint();
 					 }		
          		break;
-
-         	// M : mute music
-         	case KeyEvent.VK_M:
-         		mute = !mute;
-         		if(mute)
-         			clip.stop();
-         		else
-         			clip.start(); 	
-         		break;	
-
          	case KeyEvent.VK_N:
          		clip.stop();
          		remove(gameoverLabel);
