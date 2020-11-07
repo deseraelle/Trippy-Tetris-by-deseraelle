@@ -1,6 +1,5 @@
 /***************************************************************************************/
 // CLASS: 		  TetrisPanel
-// AUTHOR: 		  dævyd hjelmstad (dhjelmstad@gmail.com)
 // AUTHOR: 		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
 // DESCRIPTION:  The TetrisPanel class sets up the GUI for the game and handles all
 //					  of the game logic. 
@@ -16,12 +15,6 @@ import java.lang.Math.*;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.lang.*;
-
-import java.io.FileWriter;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class TetrisPanel extends JPanel
