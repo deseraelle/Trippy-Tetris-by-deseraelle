@@ -1,6 +1,6 @@
 /***************************************************************************************/
 // CLASS: 		  TetrisPanel
-// AUTHOR: 		  dævyd hjelmstad (dhjelmstad@gmail.com)
+// AUTHOR: 		  Deserælle Lesdøfemmejh (deseraelle@gmail.com)
 // DESCRIPTION:  The TetrisPanel class sets up the GUI for the game and handles all
 //					  of the game logic. 
 // LAST UPDATED: 1 Nov 2020
