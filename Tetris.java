@@ -1,6 +1,6 @@
 /***************************************************************************************/
 // CLASS: 		  Tetris
-// AUTHOR:		  Dæyva Hjelmstad (dhjelmstad@gmail.com)
+// AUTHOR:		  Deseralle Lesdøfemmejh (deseraelle@gmail.com)
 // DESCRIPTION:  The Tetris class contains the main() method for the game, which 
 //					  creates a frame and adds an instance of TetrisPanel to it. 
 // LAST UPDATED: 3 Nov 2012
