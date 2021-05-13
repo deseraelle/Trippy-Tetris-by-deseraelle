@@ -113,7 +113,7 @@ public class TetrisPanel extends JPanel
  	 	pausedLabel = new JLabel("");
  	 	gameoverLabel = new JLabel("GAME OVER");
  	 	instructionLabel = new JLabel("<HTML>Use arrow keys to move side to side. 'Z' and 'X' rotate pieces, and Space Bar is hard drop. Press 'P' to pause, 'N' for a new game. <BR>1 Line- 100 pts<BR>2 Lines- 200pts<BR>3 Lines- 400 pts<BR>4 Lines-800 pts</HTML>");
- 	 	titleLabel = new JLabel("<HTML>TRIPPY TETRIS<BR>by dævyd</HTML>");
+ 	 	titleLabel = new JLabel("<HTML>TRIPPY TETRIS<BR>by Deserælle</HTML>");
  	 	titleLabel.setFont(new Font("Sans-Serif", Font.ITALIC, 33));
  	 	titleLabel.setForeground(Color.WHITE);
  	 	titleLabel.setBounds((LEFT_BUFFER+WIDTH/2)*GRID_SIZE-4*GRID_SIZE+10, GRID_SIZE, 8*GRID_SIZE, 5*GRID_SIZE);
